@@ -18,11 +18,12 @@ export const GeneratedQuestionsSchema = z.object({
   questions: z
     .array(
       z.object({
-        question: z.string(),
-        reason: z.string(),
+        question: z.string().trim().min(1).max(100),
+        reason: z.string().trim().min(1).max(300),
+        options: z.array(z.string().trim().min(1).max(80)).min(2).max(5),
       }),
     )
-    .length(3),
+    .length(2),
 });
 
 export const GeneratedSmartGoalSchema = z.object({

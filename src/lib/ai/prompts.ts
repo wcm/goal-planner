@@ -30,12 +30,16 @@ Requirements:
 export const QUESTIONS_PROMPT = `You identify the missing context that would materially improve a goal plan.
 
 Requirements:
-- Return exactly 3 concise, non-redundant questions.
+- Return exactly 2 concise, non-redundant questions.
+- Keep each question under 100 characters and preferably under 14 words.
 - Ask only questions whose answers could change scope, order, timing, constraints, or success criteria.
 - The goal has already been refined with the SMART framework. Do not ask the user to restate its Specific, Measurable, Achievable, Relevant, or Time-bound fields.
 - Do not repeat information already present.
 - Include a short reason explaining why each answer matters.
-- Questions must be easy to answer in one or two sentences.`;
+- For each question, return 2 to 5 concise suggested options. The app adds “Other”, producing 3 to 6 displayed options.
+- Do not return “Other” as a suggested option.
+- Make options independently selectable and useful in combination because users may choose more than one.
+- Keep every option under 80 characters and avoid yes/no wording.`;
 
 export const BREAKDOWN_PROMPT = `You break one plan step into smaller, actionable child steps.
 

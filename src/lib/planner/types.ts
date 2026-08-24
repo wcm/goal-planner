@@ -71,6 +71,7 @@ export type GeneratedPlan = {
 export type GeneratedQuestion = {
   question: string;
   reason: string;
+  options: string[];
 };
 
 export type GeneratedSmartGoal = {

@@ -278,6 +278,9 @@ export function NewPlanClient({ viewer, initialGoal }: { viewer: Viewer; initial
               <span>Your SMART goal</span>
               <strong>{smartGoal?.goal}</strong>
             </div>
+            <div className="context-stage-heading">
+              <h2>Add context to personalise your plan</h2>
+            </div>
             {error && <div className="error-card" role="alert">{error}</div>}
 
             {busy === "questions" && (

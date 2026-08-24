@@ -14,6 +14,7 @@ import {
   QUESTIONS_PROMPT,
   SMART_GOAL_PROMPT,
 } from "@/lib/ai/prompts";
+import { normalizeQuestionOptions } from "@/lib/ai/questions";
 import type { z } from "zod";
 
 type ContextInput = z.infer<typeof ContextInputSchema>;
@@ -149,31 +150,37 @@ class DemoAiProvider {
     targetTitle: string | null;
     existingContext: ContextInput[];
   }) {
-    const scope = args.targetTitle ?? titleFromGoal(args.goal);
+    const scope = (args.targetTitle ?? titleFromGoal(args.goal)).slice(0, 52).trim();
     const candidates = [
         {
-          question: `What would a successful result for “${scope}” look like in concrete terms?`,
+          question: `What kind of result matters most for “${scope}”?`,
           reason: "A measurable finish line changes what the plan needs to include.",
+          options: ["A completed deliverable", "A measurable result", "A consistent habit", "A milestone reached"],
         },
         {
-          question: "Is there a target date or a weekly time budget to work within?",
+          question: "How much time can you usually give this each week?",
           reason: "Timing constraints determine the appropriate scope and pace.",
+          options: ["Under 2 hours", "2–5 hours", "5–10 hours", "More than 10 hours"],
         },
         {
-          question: "What have you already completed, tried, or learned?",
+          question: "Where are you starting from?",
           reason: "Existing progress prevents duplicated work and improves sequencing.",
+          options: ["Starting from scratch", "Some research completed", "Already practising", "Partly completed"],
         },
         {
-          question: "What is the biggest constraint or risk you expect?",
+          question: "Which constraints are most likely to affect progress?",
           reason: "The plan can address the most likely blocker early.",
+          options: ["Limited time", "Limited budget", "Missing skills or knowledge", "Dependence on other people"],
         },
         {
-          question: "Is anyone else involved, and what do you need from them?",
+          question: "Who will be involved?",
           reason: "Dependencies and ownership can materially change the sequence.",
+          options: ["Working alone", "One collaborator", "A small team", "External specialist support"],
         },
         {
-          question: "What trade-off are you unwilling to make while pursuing this?",
+          question: "Which boundaries should the plan protect?",
           reason: "A hard boundary keeps the plan useful instead of merely ambitious.",
+          options: ["Health and rest", "Staying within budget", "Work or family commitments", "Quality of the outcome"],
         },
       ];
     const fresh = candidates.filter(
@@ -183,7 +190,10 @@ class DemoAiProvider {
           ),
       );
     return {
-      questions: (fresh.length >= 3 ? fresh : candidates).slice(0, 3),
+      questions: (fresh.length >= 2 ? fresh : candidates).slice(0, 2).map((question) => ({
+        ...question,
+        options: normalizeQuestionOptions(question.options),
+      })),
     };
   }
 
@@ -312,7 +322,12 @@ class OpenAiProvider {
     if (!response.output_parsed) {
       throw new AiRefusalError("Questions could not be generated for this request.");
     }
-    return response.output_parsed;
+    return {
+      questions: response.output_parsed.questions.map((question) => ({
+        ...question,
+        options: normalizeQuestionOptions(question.options),
+      })),
+    };
   }
 
   async generateBreakdown(
