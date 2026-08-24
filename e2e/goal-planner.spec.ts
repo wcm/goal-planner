@@ -40,7 +40,7 @@ test("makes a goal SMART before asking two context questions with options", asyn
   await page.goto("/plans/new?goal=Learn%20conversational%20Spanish");
   await expect(page.getByLabel("Your SMART goal")).toHaveValue(/10-minute everyday conversation/);
   await page.getByRole("button", { name: "Continue: add context" }).click();
-  await expect(page.locator("fieldset.context-question")).toHaveCount(2);
+  await expect(page.locator(".context-question[role='group']")).toHaveCount(2);
   await expect(page.getByRole("button", { name: "Other" })).toHaveCount(2);
   await expect(page.locator("textarea")).toHaveCount(1);
   await page.getByRole("button", { name: "2–5 hours" }).click();
